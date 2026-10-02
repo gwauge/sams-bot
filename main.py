@@ -20,9 +20,9 @@ from datetime import datetime
 import websockets
 from dotenv import load_dotenv
 
-from bvv_bot import format, sams
-from bvv_bot.match import Match
-from bvv_bot.twitch import TwitchChat, TwitchError
+from sams_bot import format, sams
+from sams_bot.match import Match
+from sams_bot.twitch import TwitchChat, TwitchError
 
 
 TICKER_ID = "bbvv"

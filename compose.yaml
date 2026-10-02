@@ -1,5 +1,5 @@
 services:
-  bvv-bot:
+  sams-bot:
     build: .
     # main.py exits 0 once every listed match is finished; only restart after crashes
     restart: on-failure

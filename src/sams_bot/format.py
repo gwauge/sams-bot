@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from bvv_bot.match import Match
+from sams_bot.match import Match
 
 def format_start(match: Match) -> str:
     return f"{datetime.fromtimestamp(match.date / 1000):%a %d.%m. %H:%M}"

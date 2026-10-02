@@ -8,7 +8,7 @@ from datetime import datetime
 
 import websockets
 
-from bvv_bot.match import Match
+from sams_bot.match import Match
 
 TICKER_ID = "bbvv"
 REST_URL = f"https://backend.sams-ticker.de/live/indoor/tickers/{TICKER_ID}"

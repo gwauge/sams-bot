@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
-from bvv_bot.format import format_start
-from bvv_bot.match import Match
+from sams_bot.format import format_start
+from sams_bot.match import Match
 
 
 GenderType = Literal["male", "female"]
@@ -56,7 +56,7 @@ class Team:
 if __name__ == "__main__":
     import argparse
     import re
-    from bvv_bot.sams import fetch_snapshot
+    from sams_bot.sams import fetch_snapshot
 
     parser = argparse.ArgumentParser(description="Fetch and print SAMS data")
     subparsers = parser.add_subparsers(dest="command", required=True)
