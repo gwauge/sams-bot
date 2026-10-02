@@ -86,4 +86,4 @@ if __name__ == "__main__":
         for matchDay in snapshot["matchDays"]:
             for match in matchDay["matches"]:
                 if match["team1"] == team_obj.id or match["team2"] == team_obj.id:
-                    print(f"\t{match['id']} | {match['teamDescription1']} vs {match['teamDescription2']} | {format_start(match)}")
+                    print(f"\t{match['id']} | {match['teamDescription1']} vs {match['teamDescription2']} | {format_start(Match.from_dict(match))}")

@@ -1,7 +1,9 @@
 from datetime import datetime
 
-def format_start(match: dict) -> str:
-    return f"{datetime.fromtimestamp(match['date'] / 1000):%a %d.%m. %H:%M}"
+from bvv_bot.match import Match
+
+def format_start(match: Match) -> str:
+    return f"{datetime.fromtimestamp(match.date / 1000):%a %d.%m. %H:%M}"
 
 
 def format_score(match: dict, state: dict) -> str:

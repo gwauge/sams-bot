@@ -39,7 +39,7 @@ def format_sets(state: dict) -> str:
 
 
 def match_label(match: Match, state: dict | None) -> str:
-    teams = f"{match['teamDescription1']} vs. {match['teamDescription2']}"
+    teams = f"{match.teamDescription1} vs. {match.teamDescription2}"
     if is_live(state):
         status = f"LIVE {format_sets(state)}"
     elif state and state.get("finished"):
@@ -50,7 +50,7 @@ def match_label(match: Match, state: dict | None) -> str:
 
 
 def format_score(match: Match, state: dict) -> str:
-    team1, team2 = match["teamDescription1"], match["teamDescription2"]
+    team1, team2 = match.teamDescription1, match.teamDescription2
     sets = state["setPoints"]
     set_scores = " ".join(
         f"{s['setScore']['team1']}:{s['setScore']['team2']}" for s in state["matchSets"]
@@ -73,7 +73,7 @@ def score_key(state: dict) -> tuple:
 
 
 async def follow(snapshot: dict, match: Match) -> None:
-    matches_by_id = {m["id"]: m for m in sams.all_matches(snapshot)}
+    matches_by_id = {m.id: m for m in sams.all_matches(snapshot)}
     last_keys: dict[str, tuple] = {}
 
     print(f"\nFollowing: {match_label(match, snapshot['matchStates'].get(match.id))}\n")
