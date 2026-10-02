@@ -11,3 +11,6 @@ wheels/
 
 # Local secrets
 .env
+
+# Server-specific match list (see matches.example.csv)
+matches.csv

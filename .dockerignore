@@ -1,0 +1,8 @@
+.env
+.venv
+.git
+**/__pycache__
+*.py[oc]
+matches.csv
+Dockerfile
+compose.yaml

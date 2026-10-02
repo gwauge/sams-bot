@@ -24,6 +24,17 @@ Typical flow: `team name` → `team games` → `main.py <match_id>`.
 
 The Twitch option needs `TWITCH_USERNAME` (the bot account's login) and `TWITCH_TOKEN` (a user OAuth token with `chat:read` + `chat:edit`; the `oauth:` prefix is optional), either in the environment or in a gitignored `.env` next to `main.py` (loaded via python-dotenv; real env vars win).
 
+### Docker (server deployment)
+
+```sh
+cp matches.example.csv matches.csv        # edit first; compose refuses to start if it's missing
+docker compose up -d --build
+docker compose logs -f
+docker compose restart                    # after editing matches.csv
+```
+
+The container runs `main.py --matches /config/matches.csv` with `./matches.csv` bind-mounted read-only (`create_host_path: false`, so a missing file is an error rather than an empty directory). Twitch credentials come from `.env` via `env_file`; `.dockerignore` keeps `.env` and `matches.csv` out of the image. `restart: on-failure` is deliberate: `main.py` exits 0 once all matches are finished, so `always`/`unless-stopped` would restart-loop; config errors (e.g. unknown match id) exit 1 and do loop, visibly in the logs. `TZ=Europe/Berlin` is set because match times are formatted in local time.
+
 `htmx-example.py` is a standalone Flask + HTMX todo demo, unrelated to SAMS; it appears to be a reference for a future web UI (`uv run htmx-example.py`).
 
 ## Architecture

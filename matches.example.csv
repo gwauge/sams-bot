@@ -1,0 +1,4 @@
+match_id,twitch_channel
+# one row per match and channel; leave the channel empty to only log the match
+# find match ids with: uv run -m bvv_bot.team name <team> / uv run -m bvv_bot.team games <team_id>
+8954150a-d246-4c29-8937-70879b4569c3,your_channel
