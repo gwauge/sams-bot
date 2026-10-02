@@ -14,6 +14,7 @@ Uses `uv` with Python 3.13 (`.python-version`). The package lives under `src/bvv
 uv sync                                   # install deps
 uv run main.py <match_id>                 # follow one match live until it finishes
 uv run main.py <match_id> --twitch-channel <channel>  # also post each update to Twitch chat
+uv run main.py --matches matches.csv       # several matches; rows are "match_id,twitch_channel" (channel optional, header optional)
 uv run -m bvv_bot.sams snapshot           # dump the full REST snapshot as JSON
 uv run -m bvv_bot.team name <regex>       # find League teams by name -> team ids
 uv run -m bvv_bot.team games <team_id>    # list a team's matches -> match ids
@@ -33,7 +34,7 @@ Two data sources from SAMS:
 
 Only series with `class == "League"` are treated as real teams (youth tournaments reuse club names). `FAVORITES` in `main.py` encodes this for named shortcuts.
 
-Modules in `src/bvv_bot`: `sams` (fetch + `all_matches`, sorted by date), `match` (`Match` dataclass), `team` (`Team` dataclass, gender parsing, lookup by id), `format` (display helpers), `twitch` (`TwitchChat`: IRC-over-WebSocket client that logs in, joins one channel, sends `PRIVMSG`s, answers `PING`s in a background reader task, prints Twitch `NOTICE`s to stderr, and reconnects on the next `send` after a drop). In `main.py`, `report()` prints every score change and, if a `TwitchChat` is passed, posts `score_line()` (the console line without its timestamp); Twitch errors while following are logged and don't stop the ticker, but a failed login at startup exits. Each of `sams`/`team` doubles as a small CLI via `__main__`.
+Modules in `src/bvv_bot`: `sams` (fetch + `all_matches`, sorted by date), `match` (`Match` dataclass), `team` (`Team` dataclass, gender parsing, lookup by id), `format` (display helpers), `twitch` (`TwitchChat`: IRC-over-WebSocket client that logs in, joins one channel, sends `PRIVMSG`s, answers `PING`s in a background reader task, prints Twitch `NOTICE`s to stderr, and reconnects on the next `send` after a drop). `main.py` turns either input into a list of `Followed` (a match + its `TwitchChat`s; one shared `TwitchChat` per channel) and listens on one SAMS WebSocket for all of them. Rules: scores always print to the console, but `report()` posts to Twitch only once `state["started"]` is true; a match is removed from `active` when it finishes (its final score is still posted), its chats are closed once no remaining match uses them, and the program exits when `active` is empty. Matches already finished in the startup snapshot are skipped. Twitch errors while following are logged and don't stop the ticker; a failed login at startup exits. Each of `sams`/`team` doubles as a small CLI via `__main__`.
 
 ## Known inconsistencies (mid-refactor)
 
