@@ -6,7 +6,7 @@ services:
     environment:
       TZ: Europe/Berlin  # match start times are printed in local time
     env_file:
-      - path: .env  # TWITCH_USERNAME, TWITCH_TOKEN
+      - path: .env  # TWITCH_USERNAME + TWITCH_CLIENT_ID/_SECRET/_REFRESH_TOKEN (or TWITCH_TOKEN)
         required: false
     volumes:
       - type: bind

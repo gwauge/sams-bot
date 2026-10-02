@@ -22,7 +22,11 @@ uv run -m sams_bot.team games <team_id>    # list a team's matches -> match ids
 
 Typical flow: `team name` → `team games` → `main.py <match_id>`.
 
-The Twitch option needs `TWITCH_USERNAME` (the bot account's login) and `TWITCH_TOKEN` (a user OAuth token with `chat:read` + `chat:edit`; the `oauth:` prefix is optional), either in the environment or in a gitignored `.env` next to `main.py` (loaded via python-dotenv; real env vars win).
+The Twitch option needs `TWITCH_USERNAME` (the bot account's login) plus credentials, either in the environment or in a gitignored `.env` next to `main.py` (loaded via python-dotenv; real env vars win):
+- preferred: `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` (the Twitch app's) and `TWITCH_REFRESH_TOKEN` (from the authorization-code flow with scopes `chat:read chat:edit`, done as the bot account). `TwitchAuth` then fetches access tokens itself: at startup, ~5 min before expiry (checked on each (re)connect), and after a rejected login. One `TwitchAuth` is shared by all channels and refreshes under a lock.
+- or a static `TWITCH_TOKEN` (user access token, `oauth:` prefix optional), which stops working when it expires (~4 h). Note the app's Client Secret is *not* a token.
+
+If Twitch rotates the refresh token, the new one is only kept in memory (a warning is logged; it's never printed).
 
 ### Docker (server deployment)
 

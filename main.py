@@ -4,8 +4,10 @@ Follow one match by ID (optionally with --twitch-channel), or several via
 --matches, a CSV file of "match_id,twitch_channel" rows (channel may be empty).
 Updates are posted to Twitch only once a match has started; a match is dropped
 once it finishes, and the program exits when all followed matches are done.
-Twitch posts use the account given by the TWITCH_USERNAME and TWITCH_TOKEN
-environment variables (read from a .env file next to main.py if present).
+Twitch posts use the account in TWITCH_USERNAME, authenticated either by a
+static TWITCH_TOKEN or, so tokens are renewed automatically, by TWITCH_CLIENT_ID +
+TWITCH_CLIENT_SECRET + TWITCH_REFRESH_TOKEN. These environment variables are read
+from a .env file next to main.py if present.
 """
 
 import argparse
@@ -22,7 +24,7 @@ from dotenv import load_dotenv
 
 from sams_bot import format, sams
 from sams_bot.match import Match
-from sams_bot.twitch import TwitchChat, TwitchError
+from sams_bot.twitch import TwitchAuth, TwitchChat, TwitchError
 
 
 TICKER_ID = "bbvv"
@@ -218,10 +220,14 @@ def main() -> None:
     chats: dict[str, TwitchChat] = {}
     if channels:
         load_dotenv()  # real environment variables take precedence over .env
-        username, token = os.environ.get("TWITCH_USERNAME"), os.environ.get("TWITCH_TOKEN")
-        if not (username and token):
-            sys.exit("Posting to Twitch needs TWITCH_USERNAME and TWITCH_TOKEN (set them in .env or the environment).")
-        chats = {c: TwitchChat(username, token, c) for c in sorted(channels)}
+        env = {k: os.environ.get(f"TWITCH_{k}") or None for k in ("USERNAME", "TOKEN", "CLIENT_ID", "CLIENT_SECRET", "REFRESH_TOKEN")}
+        auth = TwitchAuth(env["TOKEN"], env["CLIENT_ID"], env["CLIENT_SECRET"], env["REFRESH_TOKEN"])
+        if not (env["USERNAME"] and (env["TOKEN"] or auth.can_refresh)):
+            sys.exit(
+                "Posting to Twitch needs TWITCH_USERNAME plus either TWITCH_TOKEN or TWITCH_CLIENT_ID, "
+                "TWITCH_CLIENT_SECRET and TWITCH_REFRESH_TOKEN (set them in .env or the environment)."
+            )
+        chats = {c: TwitchChat(env["USERNAME"], auth, c) for c in sorted(channels)}
 
     followed = [
         Followed(matches_by_id[match_id], [chats[c] for c in cs])
